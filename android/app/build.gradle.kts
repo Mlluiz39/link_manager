@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.link_manager"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "29.0.13599879" // Use the NDK version specified in your Flutter project.
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
