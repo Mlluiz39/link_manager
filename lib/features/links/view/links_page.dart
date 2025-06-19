@@ -53,6 +53,7 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 22,
+            color: Colors.white,
             letterSpacing: 1.2,
           ),
         ),
@@ -152,10 +153,10 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               child: const Text(
                 'Gerencie e compartilhe seus links de todas as redes sociais de forma simples e elegante',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.black54),
+                style: TextStyle(fontSize: 18, color: Colors.black54, height: 1.4),
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 52),
             AnimatedSlide(
               offset: const Offset(0, 0.2),
               duration: const Duration(milliseconds: 800),
@@ -186,6 +187,7 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
 
   static Widget _socialIcon(IconData icon, Color? color) {
     return CircleAvatar(
+      // ignore: deprecated_member_use
       backgroundColor: color?.withOpacity(0.15),
       radius: 28,
       child: Icon(icon, color: color, size: 32),
@@ -305,6 +307,7 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
                   ),
                   DropdownMenuItem(value: 'YouTube', child: Text('YouTube')),
                   DropdownMenuItem(value: 'Facebook', child: Text('Facebook')),
+                  DropdownMenuItem(value: 'TikTok', child: Text('TikTok')),
                   DropdownMenuItem(value: 'Outro', child: Text('Outro')),
                 ],
                 onChanged: (value) {
@@ -321,7 +324,8 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white,
+              ),
               onPressed: () {
                 if (titleController.text.isNotEmpty &&
                     urlController.text.isNotEmpty) {
