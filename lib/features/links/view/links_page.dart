@@ -153,7 +153,11 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               child: const Text(
                 'Gerencie e compartilhe seus links de todas as redes sociais de forma simples e elegante',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, color: Colors.black54, height: 1.4),
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.black54,
+                  height: 1.4,
+                ),
               ),
             ),
             const SizedBox(height: 52),
@@ -205,49 +209,14 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
                 style: TextStyle(color: Colors.grey[600], fontSize: 18),
               ),
             )
-          : ListView.separated(
+          : ListView.builder(
               itemCount: viewModel.links.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final link = viewModel.links[index];
-                return Card(
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    leading: CircleAvatar(
-                      backgroundColor: _getColorForType(link.type),
-                      child: Icon(
-                        _getIconForType(link.type),
-                        color: Colors.white,
-                      ),
-                    ),
-                    title: Text(
-                      link.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    subtitle: Text(
-                      link.url,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.blueGrey,
-                      ),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.redAccent),
-                      onPressed: () => viewModel.removeLink(link.id),
-                      tooltip: 'Remover',
-                    ),
-                    onTap: () => _showOptionsDialog(context, viewModel, link),
-                  ),
+                return ListTile(
+                  title: Text(link.title),
+                  subtitle: Text(link.url),
+                  onTap: () => _openUrl(link.url), // <-- Aqui abre o link
                 );
               },
             ),
@@ -324,7 +293,9 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               child: const Text('Cancelar'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 if (titleController.text.isNotEmpty &&
@@ -530,6 +501,17 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao restaurar backup.')),
+      );
+    }
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível abrir o link')),
       );
     }
   }
