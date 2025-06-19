@@ -128,7 +128,81 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               curve: Curves.easeOut,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 24),
-                child: Icon(Icons.link, size: 100, color: Colors.purple),
+                child: SizedBox(
+                  height: 200,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Círculo de fundo
+                      Positioned(
+                        child: Container(
+                          width: 180,
+                          height: 180,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple.withOpacity(0.1),
+                          ),
+                        ),
+                      ),
+                      // Círculo menor
+                      Positioned(
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.purple.withOpacity(0.15),
+                          ),
+                        ),
+                      ),
+                      // Ícones flutuantes
+                      Positioned(
+                        top: 20,
+                        left: 100,
+                        child: _buildFloatingIcon(
+                          Icons.facebook,
+                          Colors.purple[800]!,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 30,
+                        right: 90,
+                        child: _buildFloatingIcon(
+                          Icons.camera_alt,
+                          Colors.purple,
+                        ),
+                      ),
+                      Positioned(
+                        top: 100,
+                        right: 70,
+                        child: _buildFloatingIcon(
+                          Icons.ondemand_video,
+                          Colors.purpleAccent,
+                        ),
+                      ),
+                      // Ícone central
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.purple.withOpacity(0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.link,
+                          size: 50,
+                          color: Colors.purple,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -213,10 +287,90 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
               itemCount: viewModel.links.length,
               itemBuilder: (context, index) {
                 final link = viewModel.links[index];
-                return ListTile(
-                  title: Text(link.title),
-                  subtitle: Text(link.url),
-                  onTap: () => _openUrl(link.url), // <-- Aqui abre o link
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: InkWell(
+                      onTap: () => _showOpenDialog(context, link.url),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  _getIconForType(link.type),
+                                  color: _getColorForType(link.type),
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        link.title,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        link.url,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton.icon(
+                                  onPressed: () => _showAddLinkDialog(
+                                    context,
+                                    viewModel,
+                                    linkToEdit: link,
+                                  ),
+                                  icon: const Icon(Icons.edit, size: 20),
+                                  label: const Text('Editar'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.purple,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                TextButton.icon(
+                                  onPressed: () => _showDeleteConfirmation(
+                                    context,
+                                    viewModel,
+                                    link,
+                                  ),
+                                  icon: const Icon(Icons.delete, size: 20),
+                                  label: const Text('Excluir'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.red,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -416,6 +570,37 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
     );
   }
 
+  void _showDeleteConfirmation(
+    BuildContext context,
+    LinkViewModel viewModel,
+    Link link,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Excluir Link'),
+        content: Text('Deseja realmente excluir o link "${link.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              viewModel.removeLink(link.id);
+              Navigator.of(context).pop();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Link excluído com sucesso!')),
+              );
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+  }
+
   IconData _getIconForType(String type) {
     switch (type) {
       case 'Instagram':
@@ -506,13 +691,57 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
   }
 
   Future<void> _openUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } else {
+    try {
+      String urlToOpen = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        urlToOpen = 'https://$url';
+      }
+
+      final uri = Uri.parse(urlToOpen);
+      if (await canLaunchUrl(uri)) {
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+        if (!launched) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Não foi possível abrir o link. Verifique se você tem um navegador instalado.',
+              ),
+            ),
+          );
+        }
+      } else {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('URL inválida ou não suportada')),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Não foi possível abrir o link')),
+        SnackBar(content: Text('Erro ao abrir o link: ${e.toString()}')),
       );
     }
+  }
+
+  Widget _buildFloatingIcon(IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.purple.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Icon(icon, size: 24, color: color),
+    );
   }
 }
