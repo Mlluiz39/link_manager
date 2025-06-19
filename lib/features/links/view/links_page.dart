@@ -146,7 +146,7 @@ class _LinksPageState extends State<LinksPage> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 32),
             AnimatedOpacity(
               opacity: 1,
               duration: const Duration(milliseconds: 900),
