@@ -28,8 +28,29 @@ class LinkManagerApp extends StatelessWidget {
             backgroundColor: Colors.purple,
           ),
         ),
-        home: const LinksPage(),
+        home: const _LinksLoader(),
       ),
+    );
+  }
+}
+
+class _LinksLoader extends StatelessWidget {
+  const _LinksLoader();
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = Provider.of<LinkViewModel>(context, listen: false);
+    return FutureBuilder(
+      future: viewModel.loadLinks(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return const LinksPage();
+        } else {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+      },
     );
   }
 }

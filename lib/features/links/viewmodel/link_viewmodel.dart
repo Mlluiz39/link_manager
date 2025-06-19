@@ -23,4 +23,9 @@ class LinkViewModel extends ChangeNotifier {
     _repository.updateLink(link);
     notifyListeners();
   }
-} 
+
+  Future<void> loadLinks() async {
+    await _repository.loadLinks();
+    notifyListeners();
+  }
+}
